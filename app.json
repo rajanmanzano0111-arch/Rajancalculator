@@ -1,0 +1,30 @@
+{
+  "expo": {
+    "name": "Calculator",
+    "slug": "MyApp",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "scheme": "myapp",
+    "userInterfaceStyle": "dark",
+    "backgroundColor": "#1B2030",
+    "newArchEnabled": true,
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "Rajancalculator"
+    },
+    "android": {
+      "package": "Rajancalculator",
+      "adaptiveIcon": {
+        "backgroundColor": "#1B2030"
+      }
+    },
+    "web": {
+      "bundler": "metro",
+      "output": "static"
+    },
+    "plugins": ["expo-router"],
+    "experiments": {
+      "typedRoutes": true
+    }
+  }
+}
