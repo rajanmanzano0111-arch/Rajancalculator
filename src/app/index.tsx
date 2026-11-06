@@ -54,6 +54,7 @@ const THEMES = {
 };
 
 type HistoryItem = { id: number; expression: string; result: string };
+type Styles = ReturnType<typeof createStyles>;
 
 function compute(a: string, b: string, op: string): number | null {
   const x = parseFloat(a);
@@ -71,6 +72,54 @@ function format(value: number | null): string {
   if (value === null) return 'Cannot divide by 0';
   if (!isFinite(value)) return 'Error';
   return String(parseFloat(value.toPrecision(12)));
+}
+
+
+type DisplayProps = {
+  previous: string | null;
+  operator: string | null;
+  current: string;
+  styles: Styles;
+};
+
+function Display({ previous, operator, current, styles }: DisplayProps) {
+  const displaySize = current.length > 9 ? 40 : current.length > 6 ? 52 : 64;
+
+  return (
+    <View style={styles.display}>
+      <Text style={styles.history} numberOfLines={1}>
+        {previous !== null && operator ? `${previous} ${operator}` : ' '}
+      </Text>
+      <Text
+        style={[styles.result, { fontSize: displaySize }]}
+        numberOfLines={1}
+        adjustsFontSizeToFit
+      >
+        {current}
+      </Text>
+    </View>
+  );
+}
+
+
+type CalcButtonProps = {
+  label: string;
+  onPress: (key: string) => void;
+  buttonStyle: any;
+  labelStyle: any;
+};
+
+function CalcButton({ label, onPress, buttonStyle, labelStyle }: CalcButtonProps) {
+  return (
+    <TouchableOpacity
+      style={buttonStyle}
+      activeOpacity={0.7}
+      onPress={() => onPress(label)}
+      accessibilityLabel={label}
+    >
+      <Text style={labelStyle}>{label}</Text>
+    </TouchableOpacity>
+  );
 }
 
 export default function Calculator() {
@@ -190,8 +239,6 @@ export default function Calculator() {
     return styles.keyText;
   };
 
-  const displaySize = current.length > 9 ? 40 : current.length > 6 ? 52 : 64;
-
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle={scheme === 'light' ? 'dark-content' : 'light-content'} />
@@ -241,33 +288,25 @@ export default function Calculator() {
             )}
           </View>
         ) : (
-          <View style={styles.display}>
-            <Text style={styles.history} numberOfLines={1}>
-              {previous !== null && operator ? `${previous} ${operator}` : ' '}
-            </Text>
-            <Text
-              style={[styles.result, { fontSize: displaySize }]}
-              numberOfLines={1}
-              adjustsFontSizeToFit
-            >
-              {current}
-            </Text>
-          </View>
+          <Display
+            previous={previous}
+            operator={operator}
+            current={current}
+            styles={styles}
+          />
         )}
 
         <View style={styles.pad}>
           {KEYS.map((row, i) => (
             <View key={i} style={styles.row}>
               {row.map((key) => (
-                <TouchableOpacity
+                <CalcButton
                   key={key}
-                  style={keyStyle(key)}
-                  activeOpacity={0.7}
-                  onPress={() => press(key)}
-                  accessibilityLabel={key}
-                >
-                  <Text style={textStyle(key)}>{key}</Text>
-                </TouchableOpacity>
+                  label={key}
+                  onPress={press}
+                  buttonStyle={keyStyle(key)}
+                  labelStyle={textStyle(key)}
+                />
               ))}
             </View>
           ))}
